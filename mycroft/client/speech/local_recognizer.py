@@ -38,6 +38,8 @@ class LocalRecognizer(object):
         self.phonemes = phonemes
         dict_name = self.create_dict(key_phrase, phonemes)
         self.decoder = Decoder(self.create_config(dict_name))
+	self.decoder1 = Decoder(self.create_config2())
+
 
     def create_dict(self, key_phrase, phonemes):
         (fd, file_name) = tempfile.mkstemp()
@@ -58,6 +60,32 @@ class LocalRecognizer(object):
         config.set_int('-nfft', 2048)
         config.set_string('-logfn', '/dev/null')
         return config
+
+    def create_config2(self):
+	config = Decoder.default_config()
+        config.set_string('-hmm', os.path.join(BASEDIR,'model',self.lang,'en-us-adapt'))
+	config.set_string('-hmm', os.path.join(BASEDIR,'model',self.lang,'hmm'))
+	#config.set_string('-dict', os.path.join(BASEDIR,'model',self.lang,'mycroft1.dic'))
+	#config.set_string('-lm', os.path.join(BASEDIR,'model',self.lang,'mycroft1.lm'))
+	config.set_string('-dict', os.path.join(BASEDIR,'model',self.lang,'4843.dic'))
+	config.set_string('-lm', os.path.join(BASEDIR,'model',self.lang,'4843.lm'))
+	#config.set_string('-dict', os.path.join(BASEDIR,'model',self.lang,'8495.dic'))
+	#config.set_string('-lm', os.path.join(BASEDIR,'model',self.lang,'8495.lm'))
+	config.set_string('-samprate', '16000')
+	return config
+    
+    def transcribeLocal(self, byte_data, metrics=None):
+	try:
+		start = time.time()
+		self.decoder1.start_utt()
+		self.decoder1.process_raw(byte_data, False, False)
+		self.decoder1.end_utt()
+		words = []
+		[words.append(seg.word) for seg in self.decoder1.seg()]
+	except:
+		print('Error',self.decoder1)
+
+        return self.decoder1.hyp().hypstr
 
     def transcribe(self, byte_data, metrics=None):
         start = time.time()

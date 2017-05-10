@@ -19,6 +19,7 @@
 import audioop
 import collections
 from time import sleep
+from datetime import datetime
 
 import pyaudio
 import speech_recognition
@@ -292,12 +293,13 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
 
         logger.debug("Waiting for wake word...")
         self.wait_until_wake_word(source, sec_per_buffer)
-
+	
         logger.debug("Recording...")
         emitter.emit("recognizer_loop:record_begin")
         frame_data = self.record_phrase(source, sec_per_buffer)
         audio_data = self.create_audio_data(frame_data, source)
         emitter.emit("recognizer_loop:record_end")
+	logger.debug("Metrics: Conversation Starts :"+str(datetime.now()))
         logger.debug("Thinking...")
 
         return audio_data

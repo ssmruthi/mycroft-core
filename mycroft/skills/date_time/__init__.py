@@ -18,7 +18,7 @@
 
 import datetime
 from os.path import dirname
-
+import timeit
 import tzlocal
 from adapt.intent import IntentBuilder
 from astral import Astral
@@ -59,7 +59,8 @@ class TimeSkill(MycroftSkill):
                 return None
 
     def handle_intent(self, message):
-        location = message.data.get("Location")  # optional parameter
+	t0=timeit.default_timer()
+	location = message.data.get("Location")  # optional parameter
         nowUTC = datetime.datetime.now(timezone('UTC'))
 
         tz = self.get_timezone(self.location_timezone)
@@ -73,6 +74,9 @@ class TimeSkill(MycroftSkill):
         # Convert UTC to appropriate timezone and format
         time = nowUTC.astimezone(tz).strftime(self.format)
         self.speak_dialog("time.current", {"time": time})
+	t1=timeit.default_timer()
+	print("Metrics:Time Skill Execution time"+str(t1-t0))
+
 
     def stop(self):
         pass

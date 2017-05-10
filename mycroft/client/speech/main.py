@@ -19,6 +19,10 @@
 import re
 import sys
 from threading import Thread, Lock
+import subprocess
+from datetime import datetime
+import time
+import os
 
 from mycroft.client.enclosure.api import EnclosureAPI
 from mycroft.client.speech.listener import RecognizerLoop
@@ -73,10 +77,15 @@ def mute_and_speak(utterance):
     try:
         logger.info("Speak: " + utterance)
         loop.mute()
-        tts.execute(utterance)
+        #tts.execute(utterance)
+	time.sleep(2)
+	print("here")
+	print("Metrics:Conversation Ends:"+str(datetime.now()))
+	subprocess.call(['aplay', '/tmp/tts.wav'])
     finally:
         loop.unmute()
         lock.release()
+	os.remove("/tmp/mimic.wav");
         ws.emit(Message("recognizer_loop:audio_output_end"))
 
 
@@ -88,7 +97,6 @@ def handle_multi_utterance_intent_failure(event):
 
 def handle_speak(event):
     utterance = event.data['utterance']
-
     # This is a bit of a hack for Picroft.  The analog audio on a Pi blocks
     # for 30 seconds fairly often, so we don't want to break on periods
     # (decreasing the chance of encountering the block).  But we will
@@ -103,7 +111,7 @@ def handle_speak(event):
         for chunk in chunks:
             mute_and_speak(chunk)
     else:
-        mute_and_speak(utterance)
+	mute_and_speak(utterance)
 
 
 def handle_sleep(event):

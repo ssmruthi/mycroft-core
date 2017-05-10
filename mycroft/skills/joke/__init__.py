@@ -19,6 +19,7 @@
 from os.path import dirname, join
 
 import pyjokes
+import timeit
 
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
@@ -38,7 +39,11 @@ class JokingSkill(MycroftSkill):
         self.register_intent(intent, self.handle_intent)
 
     def handle_intent(self, message):
-        self.speak(pyjokes.get_joke(language=self.lang[:-3], category='all'))
+	t0=timeit.default_timer()
+	self.speak(pyjokes.get_joke(language=self.lang[:-3], category='all'))
+	t1=timeit.default_timer()
+	print("Metrics:Joke Skill Execution time"+str(t1-t0))
+
 
     def stop(self):
         pass

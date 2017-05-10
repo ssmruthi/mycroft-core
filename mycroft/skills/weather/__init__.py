@@ -24,6 +24,7 @@ from pyowm.webapi25.forecaster import Forecaster
 from pyowm.webapi25.forecastparser import ForecastParser
 from pyowm.webapi25.observationparser import ObservationParser
 from requests import HTTPError
+import timeit
 
 from mycroft.api import Api
 from mycroft.messagebus.message import Message
@@ -128,6 +129,7 @@ class WeatherSkill(MycroftSkill):
 
     def handle_current_intent(self, message):
         try:
+	    t0=timeit.default_timer()
             location, pretty_location = self.get_location(message)
 
             weather = self.owm.weather_at_place(location).get_weather()
@@ -152,8 +154,10 @@ class WeatherSkill(MycroftSkill):
             if pretty_location == self.location_pretty:
                 dialog_name += ".local"
             self.speak_dialog(dialog_name+".weather", data)
-
+	    t1=timeit.default_timer()
+	    print("Weather Skill:Execution time"+str(t1-t0))
             time.sleep(5)
+	   
             self.enclosure.activate_mouth_events()
         except HTTPError as e:
             self.__api_error(e)

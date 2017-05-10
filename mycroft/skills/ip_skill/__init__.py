@@ -19,7 +19,6 @@
 from os.path import dirname, join
 import re
 import time
-
 from netifaces import interfaces, ifaddresses, AF_INET
 
 from adapt.intent import IntentBuilder
@@ -43,6 +42,7 @@ class IPSkill(MycroftSkill):
         self.register_intent(intent, self.handle_intent)
 
     def handle_intent(self, message):
+	t0=timeit.default_timer()
         self.speak("Here are my available I.P. addresses.")
         self.enclosure.deactivate_mouth_events()
         for ifaceName in interfaces():

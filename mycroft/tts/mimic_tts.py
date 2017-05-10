@@ -19,6 +19,10 @@ import subprocess
 from time import time, sleep
 
 from os.path import join
+import os
+import timeit
+from datetime import datetime
+import requests
 
 from mycroft import MYCROFT_ROOT_PATH
 from mycroft.configuration import ConfigurationManager
@@ -44,12 +48,28 @@ class Mimic(TTS):
             self.args += ['--setf', 'duration_stretch=' + stretch]
 
     def execute(self, sentence):
-        output = subprocess.check_output(self.args + ['-t', sentence])
+	t0=timeit.default_timer()
+	r = requests.get("https://api.api.ai/v1/tts?v=20150910&text="+sentence, headers={"authorization": "Bearer 68804ad2f91a4ee1a8c80df839068776","Accept-language":"en-US"})
+	file = open("/tmp/tts.wav", "w")
+	file.write(r.content)
+	file.close()
         self.blink(0.5)
-        process = play_wav(self.filename)
-        self.visime(output)
+	t1=timeit.default_timer()
+	print("Metrics:TTS Mimic Execution time"+str(t1-t0))
+	print("Metrics:Conversation Ends:"+str(datetime.now()))
+	process = play_wav('/tmp/tts.wav')
+	#self.visime(output)
         process.communicate()
         self.blink(0.2)
+        
+	#output = subprocess.check_output(self.args + ['-t', sentence])
+        #self.blink(0.5)
+	#process = play_wav(self.filename)
+        #self.visime(output)
+        #process.communicate()
+        #self.blink(0.2)
+	
+
 
     def visime(self, output):
         start = time()

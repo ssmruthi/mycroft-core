@@ -19,6 +19,8 @@
 import time
 from Queue import Queue
 from threading import Thread
+import timeit
+from datetime import datetime
 
 import speech_recognition as sr
 from pyee import EventEmitter
@@ -135,8 +137,14 @@ class AudioConsumer(Thread):
     def transcribe(self, audio):
         text = None
         try:
-            text = self.stt.execute(audio).lower().strip()
+	    LOG.debug("Metrics:STT starts")
+            t0=timeit.default_timer()
+            #text = self.stt.execute(audio).lower().strip()
+	    text = self.mycroft_recognizer.transcribeLocal(audio.get_wav_data(), metrics=self.metrics)
+            t1=timeit.default_timer()
+	    print("Metrics:STT PocketSphinx Execution time:"+str(t1-t0))
             LOG.debug("STT: " + text)
+	    #text = "How are you"
         except sr.RequestError as e:
             LOG.error("Could not request Speech Recognition {0}".format(e))
         except HTTPError as e:

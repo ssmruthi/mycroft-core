@@ -21,6 +21,7 @@ from adapt.engine import IntentDeterminationEngine
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import open_intent_envelope, MycroftSkill
 from mycroft.util.log import getLogger
+import timeit
 
 __author__ = 'seanfitz'
 
@@ -39,6 +40,7 @@ class IntentSkill(MycroftSkill):
         self.emitter.on('detach_intent', self.handle_detach_intent)
 
     def handle_utterance(self, message):
+	t0=timeit.default_timer()
         utterances = message.data.get('utterances', '')
 
         best_intent = None
@@ -64,6 +66,8 @@ class IntentSkill(MycroftSkill):
             self.emitter.emit(Message("multi_utterance_intent_failure", {
                 "utterances": utterances
             }))
+	t1=timeit.default_timer()
+	print("Metrics:Adapt Execution time"+str(t1-t0))
 
     def handle_register_vocab(self, message):
         start_concept = message.data.get('start')

@@ -256,7 +256,7 @@ class MycroftSkill(object):
         self.emitter.emit(Message('register_vocab', {'regex': regex_str}))
 
     def speak(self, utterance):
-        self.emitter.emit(Message("speak", {'utterance': utterance}))
+	self.emitter.emit(Message("speak", {'utterance': utterance}))
 
     def speak_dialog(self, key, data={}):
         self.speak(self.dialog_renderer.render(key, data))
