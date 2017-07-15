@@ -133,6 +133,7 @@ class DeviceApi(Api):
         return self.request({
             "path": "/" + self.identity.uuid
         })
+	#return "xyz"
 
     def find_setting(self):
         return self.request({

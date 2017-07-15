@@ -135,8 +135,11 @@ class AudioConsumer(Thread):
         text = None
         try:
             # Invoke the STT engine on the audio clip
-            text = self.stt.execute(audio).lower().strip()
-            LOG.debug("STT: " + text)
+            #text = self.stt.execute(audio).lower().strip()
+	    #pocketsphinx call
+	    text=self.mycroft_recognizer.transcribeLocal(audio.get_wav_data(), metrics=self.metrics)
+            print("hiiiiiiiiii in PS")
+	    LOG.debug("STT: " + text)
         except sr.RequestError as e:
             LOG.error("Could not request Speech Recognition {0}".format(e))
         except ConnectionError as e:

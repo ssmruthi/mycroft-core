@@ -33,7 +33,7 @@ SYSTEM_CONFIG = '/etc/mycroft/mycroft.conf'
 USER_CONFIG = join(expanduser('~'), '.mycroft/mycroft.conf')
 REMOTE_CONFIG = "mycroft.ai"
 
-load_order = [DEFAULT_CONFIG, REMOTE_CONFIG, SYSTEM_CONFIG, USER_CONFIG]
+load_order = [DEFAULT_CONFIG, SYSTEM_CONFIG, USER_CONFIG]
 
 
 class ConfigurationLoader(object):
@@ -127,11 +127,12 @@ class RemoteConfiguration(object):
     @staticmethod
     def load(config=None):
         RemoteConfiguration.validate(config)
-        update = config.get("server", {}).get("update")
-
+        update = config.get("server", {}).get("upudate")
+	print(update)
         if update:
             try:
                 from mycroft.api import DeviceApi
+		print("deviceapi")
                 api = DeviceApi()
                 setting = api.find_setting()
                 location = api.find_location()

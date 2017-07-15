@@ -70,8 +70,9 @@ def skills_manager(message):
 
     if skills_manager_timer is None:
         # TODO: Localization support
-        ws.emit(Message("speak", {
-            'utterance': "Skills Updated. Mycroft is ready"}))
+        print("Skills updated")
+	#ws.emit(Message("speak", {
+        #    'utterance': "Skills Updated. Mycroft is ready"}))
 
     # Perform check again once and hour
     skills_manager_timer = Timer(3600.0, _skills_manager_dispatch)

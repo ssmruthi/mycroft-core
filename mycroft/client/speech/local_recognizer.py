@@ -21,6 +21,7 @@ import tempfile
 import time
 from os.path import join, dirname, abspath
 
+
 from pocketsphinx import Decoder
 
 __author__ = 'seanfitz, jdorleans'
@@ -67,6 +68,38 @@ class LocalRecognizer(object):
         if metrics:
             metrics.timer("mycroft.stt.local.time_s", time.time() - start)
         return self.decoder.hyp()
+
+#PocketSphinx Chnages starts#
+
+    def create_config2(self):
+	#MODELDIR = '/home/pi/IPA/original_mycroft_master/mycroft-core/pocketsphinx-python/pocketsphinx/model'
+	MODELDIR=os.path.dirname(os.path.abspath(__file__))
+	config = Decoder.default_config()
+	print(MODELDIR)
+        config.set_string('-hmm', os.path.join(MODELDIR,'model',self.lang,'en-us'))
+	config.set_string('-dict', os.path.join(MODELDIR,'model',self.lang,'mycroft1.dic'))
+	config.set_string('-lm', os.path.join(MODELDIR,'model',self.lang,'mycroft1.lm'))
+	print(config)
+	return config
+
+    def transcribeLocal(self, byte_data, metrics=None):
+	try:
+		decoder1 = Decoder(self.create_config2())       
+		start = time.time()
+		decoder1.start_utt()
+		decoder1.process_raw(byte_data, False, False)
+		decoder1.end_utt()
+		words = []
+		[words.append(seg.word) for seg in decoder1.seg()]
+		print(words)
+		print(decoder1.hyp().hypstr)
+	except:
+		print('Error',decoder1)
+
+        return decoder1.hyp().hypstr
+
+#PocketSphinx Chnages ends#
+
 
     def is_recognized(self, byte_data, metrics):
         hyp = self.transcribe(byte_data, metrics)

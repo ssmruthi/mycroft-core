@@ -70,6 +70,7 @@ class GoogleSTT(TokenSTT):
         super(GoogleSTT, self).__init__()
 
     def execute(self, audio, language=None):
+	print(self.token)
         self.lang = language or self.lang
         return self.recognizer.recognize_google(audio, self.token, s)
 
@@ -100,8 +101,21 @@ class MycroftSTT(STT):
 
     def execute(self, audio, language=None):
         self.lang = language or self.lang
+	print(self.api)
+	print(self.lang)
         return self.api.stt(audio.get_flac_data(), self.lang, 1)[0]
 
+class PocketSphinxSTT(STT):
+    def __init__(self):
+        super(PocketSphinxSTT, self).__init__()
+        self.api = STTApi()
+
+    def execute(self, audio, language=None):
+        self.lang = language or self.lang
+	print("pocketsphinx")
+	text= self.mycroft_recognizer.transcribeLocal(audio.get_wav_data(), metrics=self.metrics)
+	print(text)
+	return text
 
 class STTFactory(object):
     CLASSES = {
