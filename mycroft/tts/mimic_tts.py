@@ -15,12 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
 
+import requests
 import subprocess
 import hashlib
 import os
 import os.path
 from time import time, sleep
+import timeit
+from datetime import datetime
 import unicodedata
+import urllib
 
 from mycroft import MYCROFT_ROOT_PATH
 from mycroft.configuration import ConfigurationManager
@@ -50,6 +54,7 @@ class Mimic(TTS):
 
     def get_tts(self, sentence):
         key = str(hashlib.md5(sentence.encode('utf-8', 'ignore')).hexdigest())
+	wav_file = ""
         wav_file = os.path.join(mycroft.util.get_cache_directory("tts"),
                                 key + ".wav")
 
@@ -92,12 +97,27 @@ class Mimic(TTS):
         return None
 
     def execute(self, sentence):
-        wav_file, phonemes = self.get_tts(sentence)
+        t0=timeit.default_timer()
+	wav_file, phonemes = self.get_tts(sentence)
+	
 
+	#REST call to AWS
+	#aws_tts_url = "http://ec2-54-174-47-81.compute-1.amazonaws.com:3000/mimic?text="+sentence
+	#AWSresponse = requests.get(aws_tts_url)
+	#file = open("/tmp/tts.wav", "w")
+	#for chunk in AWSresponse.iter_content(chunk_size=1024):
+        #	file.write(chunk)
+	#file.close()
         self.blink(0.5)
-        process = mycroft.util.play_wav(wav_file)
-        self.visime(phonemes)
+	t1=timeit.default_timer()
+	print("Metrics:TTS Mimic Execution time"+str(t1-t0))
+	print("Metrics:Conversation Ends:"+str(datetime.now()))
+        #process = mycroft.util.play_wav("/tmp/tts.wav")
+	
+	process = mycroft.util.play_wav(wav_file)
+	self.visime(phonemes)
         process.communicate()
+	process.kill()
         self.blink(0.2)
 
     def visime(self, output):

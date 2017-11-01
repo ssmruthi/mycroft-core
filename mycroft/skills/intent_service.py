@@ -22,6 +22,8 @@ from mycroft.messagebus.message import Message
 from mycroft.skills.core import open_intent_envelope
 from mycroft.util.log import getLogger
 from mycroft.util.parse import normalize
+import timeit
+from datetime import datetime
 
 __author__ = 'seanfitz'
 
@@ -39,6 +41,7 @@ class IntentService(object):
         self.emitter.on('detach_skill', self.handle_detach_skill)
 
     def handle_utterance(self, message):
+	t0=timeit.default_timer()
         # Get language of the utterance
         lang = message.data.get('lang', None)
         if not lang:
@@ -62,6 +65,7 @@ class IntentService(object):
         if best_intent and best_intent.get('confidence', 0.0) > 0.0:
             reply = message.reply(
                 best_intent.get('intent_type'), best_intent)
+	    print("Utterance replyyyyyyyy intent_service.py:"+str(reply))
             self.emitter.emit(reply)
         elif len(utterances) == 1:
             self.emitter.emit(Message("intent_failure", {
@@ -73,6 +77,9 @@ class IntentService(object):
                 "utterances": utterances,
                 "lang": lang
             }))
+	
+	t1=timeit.default_timer()
+	print("Metrics:Adapt Utterance Execution time:"+str(t1-t0))
 
     def handle_register_vocab(self, message):
         start_concept = message.data.get('start')

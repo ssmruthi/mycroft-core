@@ -113,7 +113,7 @@ class PocketSphinxSTT(STT):
     def execute(self, audio, language=None):
         self.lang = language or self.lang
 	print("pocketsphinx")
-	text= self.mycroft_recognizer.transcribeLocal(audio.get_wav_data(), metrics=self.metrics)
+	text= self.mycroft_recognizer.transcribeLocal(audio.get_raw_data(), metrics=self.metrics)
 	print(text)
 	return text
 
