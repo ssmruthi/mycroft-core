@@ -42,6 +42,9 @@ from mycroft.util.log import getLogger
 LOG = getLogger(__name__)
 
 aws_stt_url = "http://ec2-54-174-47-81.compute-1.amazonaws.com:3000/pocketsphinx"
+fog_stt_url = "http://10.0.0.49:3000/pocketsphinx"
+
+stt_topo ="fog"
 
 class AudioProducer(Thread):
     """
@@ -140,22 +143,26 @@ class AudioConsumer(Thread):
         text = None
         try:
             LOG.debug("Metrics:STT starts")
+            LOG.debug(str(stt_topo))
             t0=timeit.default_timer()
 
-	    # Invoke the STT engine on the audio clip-Google
-            #text = self.stt.execute(audio).lower().strip()
-	
-	    #pocketsphinx call
-	    #text=self.mycroft_recognizer.transcribeLocal(audio.get_wav_data(), metrics=self.metrics)
-	    
-	    #REST call to AWS
-	    headers = {"Content-Type": "audio/wav"}
-	    AWSresponse = requests.post(aws_stt_url,data=audio.get_wav_data(),headers=headers)
-            text=AWSresponse.text
-	    print("hiiiiii AWS response" + str(AWSresponse.text))
+	    if stt_topo == "edge":
+	    	text=self.mycroft_recognizer.transcribeLocal(audio.get_wav_data(), metrics=self.metrics)
+	    elif stt_topo == "cloud":
+		headers = {"Content-Type": "audio/wav"}
+		AWSresponse = requests.post(aws_stt_url,data=audio.get_wav_data(),headers=headers)
+            	text=AWSresponse.text
+	    elif stt_topo == "fog":
+		headers = {"Content-Type": "audio/wav"}
+		Fogresponse = requests.post(fog_stt_url,data=audio.get_wav_data(),headers=headers)
+            	text=Fogresponse.text
+	    else:
+		print("Invoke the STT engine on the audio clip-Google")
+		text = self.stt.execute(audio).lower().strip()
+
 	    t1=timeit.default_timer()
-	    print("Metrics:STT PocketSphinx Execution time:"+str(t1-t0))
-            LOG.debug("STT: " + text)
+	    LOG.debug("STT ends: " + text)
+	    LOG.debug("Metrics:STT PocketSphinx Execution time:"+str(t1-t0))
         except sr.RequestError as e:
             LOG.error("Could not request Speech Recognition {0}".format(e))
         except ConnectionError as e:

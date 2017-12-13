@@ -82,6 +82,7 @@ def handle_multi_utterance_intent_failure(event):
 def handle_speak(event):
     utterance = event.data['utterance']
     expect_response = event.data.get('expect_response', False)
+    print("................."+str(expect_response))
 
     # This is a bit of a hack for Picroft.  The analog audio on a Pi blocks
     # for 30 seconds fairly often, so we don't want to break on periods
@@ -103,7 +104,8 @@ def handle_speak(event):
         mute_and_speak(utterance)
 
     if expect_response:
-        create_signal('buttonPress')
+        print("in hererrrr")
+	create_signal('buttonPress')
 
 
 def handle_sleep(event):

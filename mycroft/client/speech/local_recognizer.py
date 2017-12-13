@@ -79,7 +79,6 @@ class LocalRecognizer(object):
         config.set_string('-hmm', os.path.join(MODELDIR,'model',self.lang,'en-us'))
 	config.set_string('-dict', os.path.join(MODELDIR,'model',self.lang,'mycroft1.dic'))
 	config.set_string('-lm', os.path.join(MODELDIR,'model',self.lang,'mycroft1.lm'))
-	print(config)
 	return config
 
     def transcribeLocal(self, byte_data, metrics=None):
@@ -91,8 +90,6 @@ class LocalRecognizer(object):
 		decoder1.end_utt()
 		words = []
 		[words.append(seg.word) for seg in decoder1.seg()]
-		print(words)
-		print(decoder1.hyp().hypstr)
 	except:
 		print('Error',decoder1)
 
