@@ -102,8 +102,8 @@ class Mimic(TTS):
 	#wav_file, phonemes = self.get_tts(sentence)
 
 	#REST call to AWS
-	#aws_tts_url = "http://ec2-54-174-47-81.compute-1.amazonaws.com:3000/mimic?text="+sentence
-	aws_tts_url="http://10.0.0.49:3000/mimic?text="+sentence
+	#aws_tts_url = "http://xxxxreplace with aws hostxx.amazonaws.com:3000/mimic?text="+sentence
+	aws_tts_url="http://<fog or cloud host>/mimic?text="+sentence
 	AWSresponse = requests.get(aws_tts_url)
 	file = open("/tmp/tts.wav", "w")
 	for chunk in AWSresponse.iter_content(chunk_size=1024):

@@ -41,8 +41,8 @@ from mycroft.util.log import getLogger
 
 LOG = getLogger(__name__)
 
-aws_stt_url = "http://ec2-54-174-47-81.compute-1.amazonaws.com:3000/pocketsphinx"
-fog_stt_url = "http://10.0.0.49:3000/pocketsphinx"
+aws_stt_url = "http://cloud_host:port/pocketsphinx"
+fog_stt_url = "http://fog_host_name:port/pocketsphinx"
 
 stt_topo ="fog"
 
