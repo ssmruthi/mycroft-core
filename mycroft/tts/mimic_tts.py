@@ -97,25 +97,26 @@ class Mimic(TTS):
         return None
 
     def execute(self, sentence):
+	LOGGER.debug("Metrics:mimic starts:"+str(datetime.now()))
         t0=timeit.default_timer()
-	wav_file, phonemes = self.get_tts(sentence)
-	
+	#wav_file, phonemes = self.get_tts(sentence)
 
 	#REST call to AWS
 	#aws_tts_url = "http://ec2-54-174-47-81.compute-1.amazonaws.com:3000/mimic?text="+sentence
-	#AWSresponse = requests.get(aws_tts_url)
-	#file = open("/tmp/tts.wav", "w")
-	#for chunk in AWSresponse.iter_content(chunk_size=1024):
-        #	file.write(chunk)
-	#file.close()
+	aws_tts_url="http://10.0.0.49:3000/mimic?text="+sentence
+	AWSresponse = requests.get(aws_tts_url)
+	file = open("/tmp/tts.wav", "w")
+	for chunk in AWSresponse.iter_content(chunk_size=1024):
+        	file.write(chunk)
+	file.close()
         self.blink(0.5)
 	t1=timeit.default_timer()
-	print("Metrics:TTS Mimic Execution time"+str(t1-t0))
-	print("Metrics:Conversation Ends:"+str(datetime.now()))
-        #process = mycroft.util.play_wav("/tmp/tts.wav")
+	LOGGER.debug("Metrics:TTS Mimic Execution time"+str(t1-t0))
+	LOGGER.debug("Metrics:Conversation Ends:"+str(datetime.now()))
+        process = mycroft.util.play_wav("/tmp/tts.wav")
 	
-	process = mycroft.util.play_wav(wav_file)
-	self.visime(phonemes)
+	#process = mycroft.util.play_wav(wav_file)
+	#self.visime(phonemes)
         process.communicate()
 	process.kill()
         self.blink(0.2)
